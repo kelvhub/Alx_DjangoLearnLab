@@ -1,43 +1,28 @@
-from django.contrib.auth import login, logout, authenticate
-from django.contrib.auth.forms import UserCreationForm
-from django.shortcuts import render, redirect
-from django.contrib import messages
+from django.shortcuts import render
+from django.contrib.auth.decorators import login_required, user_passes_test
+from django.http import HttpResponse
 
 
-def login_view(request):
-    if request.method == 'POST':
-        form = UserCreationForm(request, data=request.POST)
-        if form.is_valid():
-            user = form.get_user()
-            login(request, user)
-            return redirect('home')
-        else:
-            messages.error(request, "Invalid username or password.")
-    else:
-        form = UserCreationForm()
-    return render(request, 'relationship_app/login.html', {'form': form})
+def home_view(request):    return render(request, 'relationship_app/home.html')
+
+def role_check(role):
+    def check(user):
+        return hasattr(user, 'profile') and user.profile.role == role
+    return check
+
+@login_required
+@user_passes_test(role_check('Admin'))
+def admin_view(request):
+    return render(request, 'relationship_app/admin_dashboard.html')
+
+@login_required
+@user_passes_test(role_check('Librarian'))
+def librarian_view(request):
+    return render(request, 'relationship_app/librarian_dashboard.html') 
+
+@login_required
+@user_passes_test(role_check('Member'))
+def member_view(request):
+    return render(request, 'relationship_app/member_dashboard.html')    
 
 
-def logout_view(request):
-    logout(request)
-    return render(request, 'relationship_app/logout.html')
-
-
-def register_view(request):
-    if request.method == 'POST':
-        form = UserCreationForm(request.POST)
-        if form.is_valid():
-            user = form.save()
-            login(request, user)
-            return redirect('home')
-        else:
-            messages.error(request, "Registration failed. Please correct the errors below.")
-    else:
-        form = UserCreationForm()
-    return render(request, 'relationship_app/register.html', {'form': form})
-
-
-
-
-def home_view(request):
-    return render(request, 'relationship_app/home.html')
