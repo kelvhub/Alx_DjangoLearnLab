@@ -11,6 +11,13 @@ def role_check(role):
     return check
 
 @login_required
+@user_passes_test(role_check('member_view'))
+def member_view(request):
+    if hasattr(request.user, 'profile') and request.user.profile.role == 'member':
+        return render(request, 'relationship_app/member_dashboard.html')
+    return HttpResponse("Unauthorized", status=401)
+
+@login_required
 @user_passes_test(role_check('Admin'))
 def admin_view(request):
     return render(request, 'relationship_app/admin_dashboard.html')
