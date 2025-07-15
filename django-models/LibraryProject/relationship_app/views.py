@@ -5,7 +5,7 @@ from django.http import HttpResponse
 from relationship_app.models import Author, Librarian
 
 def list_books_view(request):
-    books = Book.objects.select_related('author').all()
+    books = Book.objects.all()
     return render(request, 'relationship_app/list_books.html', {'books': books})
 
 
