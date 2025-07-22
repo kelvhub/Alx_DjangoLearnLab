@@ -106,7 +106,7 @@ AUTH_PASSWORD_VALIDATORS = [
     },
 ]
 
-AUTH_USER_MODEL = 'relationship_app.CustomUser'  # Use the custom user profile model
+AUTH_USER_MODEL = 'bookshelf.CustomUser'  # Use the custom user profile model
 
 
 # Internationalization
