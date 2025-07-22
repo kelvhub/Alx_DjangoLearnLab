@@ -25,6 +25,22 @@ SECRET_KEY = 'django-insecure-&mms!7!$dl3oob9n$=c1@=1t3!$_u9%hx*zpjkwv(z=(79vj*e
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG =False
 
+# Redirect all non-HTTPS requests to HTTPS
+SECURE_SSL_REDIRECT = True  # Ensures all traffic is redirected to HTTPS
+
+# Enable HTTP Strict Transport Security (HSTS)
+SECURE_HSTS_SECONDS = 31536000  # One year (in seconds)
+SECURE_HSTS_INCLUDE_SUBDOMAINS = True  # Applies HSTS to all subdomains
+SECURE_HSTS_PRELOAD = True  # Allows your domain to be included in browser preload lists
+
+# Make sure to enable these settings only in production
+if not DEBUG:
+    SECURE_SSL_REDIRECT = True
+    SECURE_HSTS_SECONDS = 31536000
+    SECURE_HSTS_INCLUDE_SUBDOMAINS = True
+    SECURE_HSTS_PRELOAD = True
+
+
 ALLOWED_HOSTS = ['127.0.0.1', 'localhost']
 
 
@@ -46,6 +62,16 @@ CSP_DEFAULT_SRC = ("'self'",)
 CSP_STYLE_SRC = ("'self'", 'fonts.googleapis.com')
 CSP_FONT_SRC = ("'self'", 'fonts.gstatic.com')
 
+# Prevent your site from being framed (Clickjacking protection)
+X_FRAME_OPTIONS = 'DENY'
+
+# Prevent content type sniffing
+SECURE_CONTENT_TYPE_NOSNIFF = True
+
+# Enable browser XSS protection
+SECURE_BROWSER_XSS_FILTER = True
+
+
 
 # Application definition
 
@@ -57,11 +83,17 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'bookshelf',
- 
+    'csp',
+
       # Ensure this matches the app name in models.py
 ]
 
+
+CSP_DEFAULT_SRC = ("'self'",)
+CSP_STYLE_SRC = ("'self'", 'https://fonts.googleapis.com')
+CSP_FONT_SRC = ("'self'", 'https://fonts.gstatic.com')
 MIDDLEWARE = [
+    'csp.middleware.CSPMiddleware',
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
