@@ -1,3 +1,4 @@
+from urllib import request
 from django.shortcuts import render, redirect
 from .models import Book
 from django.contrib.auth.decorators import permission_required
@@ -17,19 +18,24 @@ def book_list(request):
 @permission_required('bookshelf.can_create', raise_exception=True)
 def book_create(request):
     if request.method == 'POST':
-        # Handle form submission
-        return redirect('book_list')
-    return render(request, 'bookshelf/book_form.html')
-
-@permission_required('bookshelf.can_edit', raise_exception=True)
-def book_edit(request, pk):
-    if request.method == 'POST':
-        form = BookForm(request.POST, instance=Book)
+        form = BookForm(request.POST)
         if form.is_valid():
             form.save()
             return redirect('book_list')
     else:
-        form = BookForm(instance=Book)
+        form = BookForm()
+    return render(request, 'bookshelf/book_form.html', {'form': form})
+
+@permission_required('bookshelf.can_edit', raise_exception=True)
+def book_edit(request, pk):
+    book = Book.objects.get(pk=pk)
+    if request.method == 'POST':
+        form = BookForm(request.POST, instance=book)
+        if form.is_valid():
+            form.save()
+            return redirect('book_list')
+    else:
+        form = BookForm(instance=book)
     return render(request, 'bookshelf/book_form.html', {'form': form})
 @permission_required('bookshelf.can_delete', raise_exception=True)
 def book_delete(request, pk):
