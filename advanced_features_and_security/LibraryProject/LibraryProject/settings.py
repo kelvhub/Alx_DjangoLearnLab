@@ -23,10 +23,28 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 SECRET_KEY = 'django-insecure-&mms!7!$dl3oob9n$=c1@=1t3!$_u9%hx*zpjkwv(z=(79vj*e'
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG =False
 
 ALLOWED_HOSTS = ['127.0.0.1', 'localhost']
 
+
+
+# Security Headers
+SECURE_BROWSER_XSS_FILTER = True
+X_FRAME_OPTIONS = 'DENY'
+SECURE_CONTENT_TYPE_NOSNIFF = True
+
+# Cookie Security
+CSRF_COOKIE_SECURE = True
+SESSION_COOKIE_SECURE = True
+
+# CSP (for Step 4 - if using django-csp)
+# Add to INSTALLED_APPS: 'csp'
+# Add this to middleware (before other security middlewares):
+# 'csp.middleware.CSPMiddleware',
+CSP_DEFAULT_SRC = ("'self'",)
+CSP_STYLE_SRC = ("'self'", 'fonts.googleapis.com')
+CSP_FONT_SRC = ("'self'", 'fonts.gstatic.com')
 
 
 # Application definition
