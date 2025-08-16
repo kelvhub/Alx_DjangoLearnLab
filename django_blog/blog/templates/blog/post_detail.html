@@ -1,0 +1,63 @@
+{% extends "base.html" %}
+{% block content %}
+<h1>{{ post.title }}</h1>
+<p>{{ post.content }}</p>
+<p><small>By {{ post.author }} on {{ post.published_date }}</small></p>
+{% if user == post.author %}
+    <a href="{% url 'post-update' post.pk %}">Edit</a> |
+    <a href="{% url 'post-delete' post.pk %}">Delete</a>
+{% endif %}
+<a href="{% url 'post-list' %}">Back</a>
+{% endblock %}
+
+
+{% extends "base.html" %}
+{% block content %}
+<article>
+  <h1>{{ post.title }}</h1>
+  <p>{{ post.content }}</p>
+  <p><small>By {{ post.author }} • {{ post.published_date }}</small></p>
+</article>
+
+<hr>
+
+<section>
+  <h2>Comments ({{ comments|length }})</h2>
+
+  {% if comments %}
+    <ul>
+      {% for c in comments %}
+        <li>
+          <p>{{ c.content }}</p>
+          <p><small>by {{ c.author }} • {{ c.created_at|date:"M j, Y H:i" }}</small></p>
+
+          {% if user == c.author %}
+            <a href="{% url 'comment-update' c.pk %}">Edit</a>
+            |
+            <a href="{% url 'comment-delete' c.pk %}">Delete</a>
+          {% endif %}
+        </li>
+      {% endfor %}
+    </ul>
+  {% else %}
+    <p>No comments yet.</p>
+  {% endif %}
+</section>
+
+<hr>
+
+<section>
+  <h3>Add a comment</h3>
+  {% if user.is_authenticated %}
+    <form method="post">
+      {% csrf_token %}
+      {{ comment_form.as_p }}
+      <button type="submit">Post Comment</button>
+    </form>
+  {% else %}
+    <p><a href="{% url 'login' %}?next={% url 'post-detail' post.pk %}">Log in</a> to comment.</p>
+  {% endif %}
+</section>
+
+<p><a href="{% url 'post-list' %}">Back to posts</a></p>
+{% endblock %}
